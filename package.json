@@ -1,17 +1,25 @@
 {
-  "name": "proyectonode",
+  "name": "coderhousenode",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npm app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agussfw17/CoderHouseNode.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/agussfw17/CoderHouseNode/issues"
+  },
+  "homepage": "https://github.com/agussfw17/CoderHouseNode#readme",
   "description": "",
   "dependencies": {
-    "dotenv": "^17.2.3",
-    "express": "^5.1.0",
-    "mysql2": "^3.15.3"
+    "moment": "^2.30.1"
   }
 }
