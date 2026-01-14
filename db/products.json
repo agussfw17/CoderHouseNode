@@ -1,3 +1,46 @@
 {
-  "products": []
+    "products": [
+        {
+            "id": 1,
+            "title": "DECODER",
+            "description": "Decoder",
+            "code": "STB-500",
+            "price": 1500,
+            "status": true,
+            "stock": 5,
+            "category": "TV",
+            "thumbnails": [
+                "img1",
+                "img2"
+            ]
+        },
+        {
+            "id": 2,
+            "title": "CMODEM",
+            "description": "Cable Modem",
+            "code": "4857AF45KG",
+            "price": 2000,
+            "status": true,
+            "stock": 200,
+            "category": "HFC",
+            "thumbnails": [
+                "img3",
+                "img4"
+            ]
+        },
+        {
+            "id": 3,
+            "title": "ONU",
+            "description": "ONU",
+            "code": "FG48887APKG",
+            "price": 2500,
+            "status": true,
+            "stock": 100,
+            "category": "FTTH",
+            "thumbnails": [
+                "img5",
+                "img6"
+            ]
+        }
+    ]
 }
