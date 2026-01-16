@@ -9,17 +9,21 @@ const __dirname = path.dirname(__filename);
 export default class Carts {
   static #path = path.join(__dirname, "../../db/carts.json");
 
-  static async postCart(products) {
-    if (!fs.existsSync(this.#path)) {
-      const emptyCarts = [];
-      await fs.promises.writeFile(this.#path, JSON.stringify(emptyCarts));
-    }
 
+  static async #readFile() {
+    if (!fs.existsSync(this.#path)) {
+      await fs.promises.writeFile(this.#path, JSON.stringify({ carts: [] }));
+    }
     const data = await fs.promises.readFile(this.#path, "utf-8");
-    const cartsJSON = JSON.parse(data);
+    return JSON.parse(data);
+  }
+
+  static async postCart(products) {
+    const cartsJSON = await this.#readFile();
 
     const lastId = cartsJSON.carts.at(-1)?.id ?? 0;
     const newId = lastId + 1;
+   
     const cart = {
       id: newId,
       products: products,
@@ -31,11 +35,8 @@ export default class Carts {
   }
 
   static async getCartProducts(id) {
-    if (!fs.existsSync(this.#path)) return null;
-
-    const data = await fs.promises.readFile(this.#path, "utf-8");
-    const carts = JSON.parse(data).carts;
-    const cart = carts.find((c) => c.id === id);
+    const cartsJSON = await this.#readFile();
+    const cart = cartsJSON.carts.find((c) => c.id === id);
 
     if (!cart) return null;
 
@@ -46,10 +47,7 @@ export default class Carts {
     const product = await Products.getProduct(pid);
     if (!product) return null;
 
-    if (!fs.existsSync(this.#path)) return null;
-
-    const data = await fs.promises.readFile(this.#path, "utf-8");
-    const cartsJSON = JSON.parse(data);
+    const cartsJSON = await this.#readFile();
 
     const cart = cartsJSON.carts.find((c) => c.id === cid);
     if (!cart) return null;

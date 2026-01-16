@@ -8,27 +8,40 @@ const __dirname = path.dirname(__filename);
 export default class Products {
   static #path = path.join(__dirname, "../../db/products.json");
 
-  static async postProduct(newProduct) {
+  static async #readFile() {
     if (!fs.existsSync(this.#path)) {
-      const emptyProducts = { products: [] };
-      await fs.promises.writeFile(this.#path, JSON.stringify(emptyProducts));
+      await fs.promises.writeFile(this.#path, JSON.stringify({ products: [] }));
     }
-
     const data = await fs.promises.readFile(this.#path, "utf-8");
-    const productsJSON = JSON.parse(data);
+    return JSON.parse(data);
+  }
+
+  static async getProducts() {
+    return await this.#readFile();
+  }
+
+  static async getProduct(id) {
+    const productsJSON = await this.#readFile();
+    const product = productsJSON.products.find((p) => p.id === id);
+    return product;
+  }
+
+  static async postProduct(newProduct) {
+    const productsJSON = await this.#readFile();
 
     const lastId = productsJSON.products.at(-1)?.id ?? 0;
     const newId = lastId + 1;
-    const product = {
+    
+  const product = {
       id: newId,
       title: newProduct.title,
-      description: newProduct.description,
-      code: newProduct.code,
-      price: newProduct.price,
-      status: newProduct.status,
-      stock: newProduct.stock,
-      category: newProduct.category,
-      thumbnails: newProduct.thumbnails,
+      description: newProduct.description ?? "",
+      code: newProduct.code ?? "",
+      price: Number(newProduct.price),
+      status: newProduct.status ?? true,
+      stock: Number(newProduct.stock),
+      category: newProduct.category ?? "",
+      thumbnails: newProduct.thumbnails ?? [],
     };
 
     productsJSON.products.push(product);
@@ -37,28 +50,11 @@ export default class Products {
     return product;
   }
 
-  static async getProducts() {
-    const data = await fs.promises.readFile(this.#path, "utf-8");
-    return JSON.parse(data);
-  }
-
-  static async getProduct(id) {
-    const data = await fs.promises.readFile(this.#path, "utf-8");
-    const products = JSON.parse(data).products;
-    const product = products.find((p) => p.id === id);
-    return product;
-  }
-
   static async updateProduct(id, updProduct) {
-    if (!fs.existsSync(this.#path)) return null;
-
-    const data = await fs.promises.readFile(this.#path, "utf-8");
-    const productsJSON = JSON.parse(data);
+    const productsJSON = await this.#readFile();
 
     const index = productsJSON.products.findIndex((p) => p.id === id);
     if (index < 0) return null;
-
-    if (updProduct && updProduct.id) delete updProduct.id;
 
     productsJSON.products[index] = {
       ...productsJSON.products[index],
@@ -70,20 +66,17 @@ export default class Products {
   }
 
   static async deleteProduct(id) {
-    if (!fs.existsSync(this.#path)) return null;
+    const productsJSON = await this.#readFile();
 
-    const data = await fs.promises.readFile(this.#path, "utf-8");
-    const products = JSON.parse(data);
+    const length = productsJSON.products.length;
 
-    const length = products.products.length;
+    productsJSON.products = productsJSON.products.filter((p) => p.id !== id);
 
-    products.products = products.products.filter((p) => p.id !== id);
-
-    if (products.products.length === length) {
-      return null;
+    if (productsJSON.products.length === length) {
+      return false;
     }
 
-    await fs.promises.writeFile(this.#path, JSON.stringify(products));
+    await fs.promises.writeFile(this.#path, JSON.stringify(productsJSON));
     return true;
   }
 }

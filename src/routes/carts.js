@@ -7,15 +7,15 @@ const router = Router();
 router.post("/", async (req, res) => {
   const body = req.body;
 
-  if (!body) {
+  if (!body || Object.keys(body).length === 0) {
     return res
-      .status(401)
+      .status(400)
       .json({ message: "Debe ingresar los datos del carrito" });
   }
 
   const requiredFields = ["products"];
   for (const field of requiredFields) {
-    if (!body[field]) {
+    if (body[field] === undefined) {
       return res.status(400).json({ message: `Falta el campo ${field}` });
     }
   }
@@ -31,7 +31,10 @@ router.post("/", async (req, res) => {
 
 router.get("/:cid", async (req, res) => {
   const id = parseInt(req.params.cid);
+  if (isNaN(id)) return res.status(400).json({ message: "Id inválido" });
+
   const products = await Carts.getCartProducts(id);
+
   if (!products)
     return res.status(404).json({ message: `No existe el carrito ${id}` });
   res.json({ products: products });
@@ -40,6 +43,8 @@ router.get("/:cid", async (req, res) => {
 router.post("/:cid/product/:pid", async (req, res) => {
   const cid = parseInt(req.params.cid);
   const pid = parseInt(req.params.pid);
+
+  if (isNaN(cid) || isNaN(pid)) return res.status(400).json({ message: "Id inválido" });
 
   const cart = await Carts.postProductCart(cid, pid);
 
