@@ -1,13 +1,10 @@
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
+import __dirname  from "../utils.js";
 import Products from "./productsClass.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 export default class Carts {
-  static #path = path.join(__dirname, "../../db/carts.json");
+  static #path = path.join(__dirname, "../db/carts.json");
 
 
   static async #readFile() {

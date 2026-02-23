@@ -1,0 +1,28 @@
+<div class="container py-5">
+  <div class="text-center mb-5">
+    <h1 class="fw-bold text-light">Home</h1>
+    <p class="text-secondary">Lista de productos</p>
+  </div>
+
+  <div class="row g-4" id="productsContainer">
+        {{#each products}}
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                <div class="product-card h-100 shadow-lg">
+                    <div class="p-4 d-flex flex-column">
+                        <h5 class="text-light fw-semibold">{{this.title}}</h5>
+                        <p class="text-secondary small mb-2">{{this.category}}</p>
+                        <p class="text-muted small">{{this.description}}</p>
+                        <div class="mt-auto">
+                            <div class="price mb-2">$ {{this.price}}</div>
+                            {{#if this.stock}}
+                                <span class="badge badge-stock mb-3">En stock ({{this.stock}})</span>
+                            {{else}}
+                                <span class="badge badge-out mb-3">Sin stock</span>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{/each}}
+    </div>
+</div>

@@ -1,12 +1,9 @@
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import __dirname from "../utils.js";
 
 export default class Products {
-  static #path = path.join(__dirname, "../../db/products.json");
+  static #path = path.join(__dirname, "../db/products.json");
 
   static async #readFile() {
     if (!fs.existsSync(this.#path)) {
@@ -17,7 +14,8 @@ export default class Products {
   }
 
   static async getProducts() {
-    return await this.#readFile();
+    const productsJSON = await this.#readFile();
+    return productsJSON.products;
   }
 
   static async getProduct(id) {
@@ -31,8 +29,8 @@ export default class Products {
 
     const lastId = productsJSON.products.at(-1)?.id ?? 0;
     const newId = lastId + 1;
-    
-  const product = {
+
+    const product = {
       id: newId,
       title: newProduct.title,
       description: newProduct.description ?? "",

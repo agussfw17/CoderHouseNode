@@ -1,15 +1,1 @@
-{
-  "products": [
-    {
-      "id": 1,
-      "title": "DECODER5",
-      "description": "Decoder",
-      "code": "STB-500",
-      "price": 1500,
-      "status": true,
-      "stock": 0,
-      "category": "TV",
-      "thumbnails": ["img1", "img2"]
-    }
-  ]
-}
+{"products":[{"id":1,"title":"DECODERPUT","description":"Decoder","code":"STB-500","price":1500,"status":true,"stock":5,"category":"TV","thumbnails":["img1","img2"]},{"id":2,"title":"ONU","description":"ZONU","code":"ONU","price":1900,"status":true,"stock":90,"category":"ONU","thumbnails":[]},{"id":4,"title":"DECODER5","description":"Decoder","code":"STB-500","price":1500,"status":true,"stock":0,"category":"TV","thumbnails":["img1","img2"]}]}

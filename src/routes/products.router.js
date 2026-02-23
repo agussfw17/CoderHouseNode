@@ -8,7 +8,7 @@ router.get("/", async (req, res) => {
   try {
     const products = await Products.getProducts();
 
-    if (!products || products.products.length <= 0) {
+    if (!products || products.length <= 0) {
       return res.status(404).json({ message: "No hay productos ingresados" });
     }
 
