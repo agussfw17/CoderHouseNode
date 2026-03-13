@@ -1,11 +1,41 @@
 import mongoose from "mongoose";
 
-const productSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  description: { type: String, required: true },
-  price: { type: Number, required: true },
-  thumbnail: { type: String, required: false }
-});
+const productSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+      minLength: 5,
+      maxLength: 100,
+    },
+    description: {
+      type: String,
+      required: true,
+      minLength: 10,
+      maxLength: 500,
+    },
+    code: { type: String, required: true, trim: true, uppercase: true },
+    price: { type: Number, required: true, min: 0 },
+    stock: { type: Number, required: true, min: 0 },
+    status: { type: Boolean, default: true },
+    category: {
+      type: String,
+      required: true,
+      enum: ["FTTH", "HFC", "DECODER"],
+    },
+    thumbnail: { type: String, trim: true, default: "product.jpg" },
+  },
+  { timestamps: true },
+); /*Guarda automaticamente el timestamp cuando se haga un insert*/
+
+/*INDEXACION*/
+productSchema.index({ title: 1 }, { unique: true });
+productSchema.index({ code: 1 }, { unique: true });
+productSchema.index({ price: 1 });
+productSchema.index({ category: 1 });
+productSchema.index({ description: "text" });
+productSchema.index({ category: 1, price: 1 });
 
 const Product = mongoose.model("Product", productSchema);
 export default Product;
