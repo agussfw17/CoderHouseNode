@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import __dirname from "../utils.js";
+import Product from "../models/product.model.js";
 
 export default class Products {
   static #path = path.join(__dirname, "../db/products.json");
@@ -16,6 +17,11 @@ export default class Products {
   static async getProducts() {
     const productsJSON = await this.#readFile();
     return productsJSON.products;
+  }
+
+  static async getProductsDB() {
+    const products = await Product.find();
+    return 
   }
 
   static async getProduct(id) {

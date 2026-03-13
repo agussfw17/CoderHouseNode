@@ -8,11 +8,24 @@ import cartsRouter from "./routes/carts.router.js";
 import viewsRouter from "./routes/views.router.js";
 import { Server } from "socket.io";
 import Products from "./classes/productsClass.js";
+import { connect } from "http2";
+import mongoose from "mongoose";
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
+/*Conexion a DB*/
+const connectMongoDB = async () => {
+  try {
+    await mongoose.connect("mongodb+srv://coder:coderpass@coderhouse-cluster.hej29ru.mongodb.net/coderhouse?appName=coderhouse-cluster");
+    console.log("Conexión a MongoDB establecida");
+  } catch (error) {
+    console.error("Error al conectar a MongoDB:", error);
+  }
+};
+
+connectMongoDB();
 
 /*Configuracion de handlebars*/
 app.engine('handlebars', handlebars.engine());
