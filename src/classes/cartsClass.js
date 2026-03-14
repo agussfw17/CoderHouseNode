@@ -1,67 +1,67 @@
-import fs from "fs";
-import path from "path";
-import __dirname  from "../utils.js";
+import Cart from "../models/carts.model.js";
 import Products from "./productsClass.js";
 
 export default class Carts {
-  static #path = path.join(__dirname, "../db/carts.json");
+	static async postCart(products) {
+		const cart = await Cart.create({});
+		return cart;
+  	}
 
+	static async getCart(id) {
+		const cart = await Cart.findById(id).lean();
+		if (!cart) return null;
+		return cart;
+  	}
 
-  static async #readFile() {
-    if (!fs.existsSync(this.#path)) {
-      await fs.promises.writeFile(this.#path, JSON.stringify({ carts: [] }));
-    }
-    const data = await fs.promises.readFile(this.#path, "utf-8");
-    return JSON.parse(data);
-  }
+	static async postProductCart(cid, pid, quantity) {
+		let updatedCart = null;
 
-  static async postCart(products) {
-    const cartsJSON = await this.#readFile();
+		const cartProducts = await Carts.getCartProducts(cid);
+		console.log(cartProducts,'cartProducts');
+    	if (cartProducts) {
+			const cartProductIndex = cartProducts.findIndex(
+				(cpi) => cpi.product._id.toString() === pid
+			);
+			console.log(cartProductIndex,'cartProductIndex');
+			if (cartProductIndex !== -1) {
+				cartProducts[cartProductIndex].quantity += quantity;
+				updatedCart = await Cart.findByIdAndUpdate( 
+					cid,  
+					{ $set: { products: cartProducts } },
+					{ new: true, runValidators: true }
+				);
+			}else {
+				updatedCart = await Cart.findByIdAndUpdate(
+					cid,
+					{ $push: { products: { product: pid, quantity } } },
+					{ new: true, runValidators: true }
+				);
+			}
+    	}
+		return updatedCart;
+  	}
 
-    const lastId = cartsJSON.carts.at(-1)?.id ?? 0;
-    const newId = lastId + 1;
-   
-    const cart = {
-      id: newId,
-      products: products,
-    };
+	static async getCartProducts(id) {
+		const cart = await Cart.findById(id).lean().populate("products.product");
+		if (!cart) return null;
+		return cart.products;
+	}
 
-    cartsJSON.carts.push(cart);
-    await fs.promises.writeFile(this.#path, JSON.stringify(cartsJSON));
-    return cart;
-  }
+	static async deleteProductCart(cid, pid) {
+		const updatedCart = await Cart.findByIdAndUpdate(
+			cid,
+			{ $pull: { products: { product: pid } } },
+			{ new: true, runValidators: true }
+		);
+		return updatedCart;
+	}
 
-  static async getCartProducts(id) {
-    const cartsJSON = await this.#readFile();
-    const cart = cartsJSON.carts.find((c) => c.id === id);
-
-    if (!cart) return null;
-
-    return cart.products;
-  }
-
-  static async postProductCart(cid, pid) {
-    const product = await Products.getProduct(pid);
-    if (!product) return null;
-
-    const cartsJSON = await this.#readFile();
-
-    const cart = cartsJSON.carts.find((c) => c.id === cid);
-    if (!cart) return null;
-
-    const index = cart.products.findIndex((p) => p.product === pid);
-
-    if (index < 0) {
-      const newProductCart = {
-        product: pid,
-        quantity: 1,
-      };
-      cart.products.push(newProductCart);
-    } else {
-      cart.products[index].quantity += 1;
-    }
-
-    await fs.promises.writeFile(this.#path, JSON.stringify(cartsJSON));
-    return cart;
-  }
+	static async updateProductsCart(cid, products) {
+		const updatedCart = await Cart.findByIdAndUpdate(
+			cid,
+			{ $set: { products } },
+			{ new: true }
+		);
+		return updatedCart;
+	}
 }

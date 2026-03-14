@@ -24,5 +24,9 @@
                 </div>
             </div>
         {{/each}}
+
+        {{#each links}}
+            <a href="{{this.link}}" class="page-link">{{this.text}}</a>
+        {{/each}}
     </div>
 </div>

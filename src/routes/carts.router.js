@@ -1,59 +1,137 @@
 import { Router } from "express";
 import Carts from "../classes/cartsClass.js";
+import Cart from "../models/carts.model.js";
 import Products from "../classes/productsClass.js";
 
 const router = Router();
 
 router.post("/", async (req, res) => {
-  const body = req.body;
-
-  if (!body || Object.keys(body).length === 0) {
-    return res
-      .status(400)
-      .json({ message: "Debe ingresar los datos del carrito" });
-  }
-
-  const requiredFields = ["products"];
-  for (const field of requiredFields) {
-    if (body[field] === undefined) {
-      return res.status(400).json({ message: `Falta el campo ${field}` });
-    }
-  }
-
-  if (!body.products || body.products.length <= 0)
-    return res
-      .status(400)
-      .json({ message: "Debe ingresar productos al carrito" });
-
-  const cart = await Carts.postCart(body.products);
-  res.json({ message: "Carrito agregado correctamente", cart: cart });
-});
-
-router.get("/:cid", async (req, res) => {
-  const id = parseInt(req.params.cid);
-  if (isNaN(id)) return res.status(400).json({ message: "Id inválido" });
-
-  const products = await Carts.getCartProducts(id);
-
-  if (!products)
-    return res.status(404).json({ message: `No existe el carrito ${id}` });
-  res.json({ products: products });
+	try {
+		const cart = await Carts.postCart({});
+		res.status(201).json({ status: "success",  payload: cart });
+	} catch (error) {
+  		res.status(500).json({ status: "error", message: "Error al agregar carrito" });
+	}
 });
 
 router.post("/:cid/product/:pid", async (req, res) => {
-  const cid = parseInt(req.params.cid);
-  const pid = parseInt(req.params.pid);
+	try {
+		const { cid, pid } = req.params;
+		const quantity = req.body.quantity || 1;
 
-  if (isNaN(cid) || isNaN(pid)) return res.status(400).json({ message: "Id inválido" });
+		const product = await Products.getProduct(pid);
+		if (!product) return res.status(404).json({ status: "error", message: "No se encuentra producto" });;
 
-  const cart = await Carts.postProductCart(cid, pid);
+		const cart = await Carts.getCart(cid);
+		if (!cart) return res.status(404).json({ status: "error", message: "No se encuentra carrito" });
 
-  if (!cart)
-    return res
-      .status(404)
-      .json({ message: "No se encuentra carrito o producto no existe" });
+		const updatedCart = await Carts.postProductCart(cid, pid, quantity);
+		if (!updatedCart) return res.status(404).json({ status: "error", message: "Error al agregar producto al carrito" });
 
-  res.json({ message: "Se agrego producto correctamente", cart: cart });
+		res.status(200).json({ status: "success", payload: updatedCart });
+	} catch (error) {
+		console.log(error,'error');
+		res.status(500).json({ status: "error", message: "Error al agregar producto al carrito" });
+	}
+});
+
+router.get("/:cid", async (req, res) => {
+	try {
+		const id = req.params.cid;
+		const products = await Carts.getCartProducts(id);
+		if (!products) return res.status(404).json({ status: "error", message: 'No existe el carrito'});
+		res.status(200).json({ status: "success", payload: products });
+	} catch (error) {
+		res.status(500).json({ status: "error", message: "Error al obtener productos del carrito" });
+	}
+});
+
+router.delete("/:cid/products/:pid", async (req, res) => {
+	try {
+		const { cid, pid } = req.params;
+		const product = await Products.getProduct(pid);
+		if (!product) return res.status(404).json({ status: "error", message: "No se encuentra producto" });;
+
+		const cart = await Carts.getCart(cid);
+		if (!cart) return res.status(404).json({ status: "error", message: "No se encuentra carrito" });
+
+		const updatedCart = await Carts.deleteProductCart(cid, pid);
+		if (!updatedCart) return res.status(404).json({ status: "error", message: "Error al eliminar producto del carrito" });
+		res.status(200).json({ status: "success", payload: updatedCart });
+	}catch (error) {
+		console.log(error,'error');
+		res.status(500).json({ status: "error", message: "Error al eliminar producto del carrito" });
+	}
+});
+
+router.put("/:cid/", async (req, res) => {
+	try {		
+		const { cid } = req.params;
+		const { products } = req.body;
+		const cart = await Carts.getCart(cid);
+		if (!cart) return res.status(404).json({ status: "error", message: "No se encuentra carrito" });
+
+		products.forEach(async (p) => {
+			const product = await Products.getProduct(p.product);
+			if (!product) return res.status(404).json({ status: "error", message: `No se encuentra producto con id ${p.product}` });
+		});
+
+		const updatedCart = await Carts.updateProductsCart(cid, products);
+		if (!updatedCart) return res.status(404).json({ status: "error", message: "Error al actualizar productos del carrito" });
+		res.status(200).json({ status: "success", payload: updatedCart });
+	} catch (error) {
+		res.status(500).json({ status: "error", message: "Error al actualizar productos del carrito" });
+	}
+});
+
+router.put("/:cid/products/:pid", async (req, res) => {
+	try {		
+		const { cid, pid } = req.params;
+		const { quantity } = req.body;
+
+		const product = await Products.getProduct(pid);
+		if (!product) return res.status(404).json({ status: "error", message: "No se encuentra producto" });
+		
+		const cart = await Carts.getCart(cid);
+		if (!cart) return res.status(404).json({ status: "error", message: "No se encuentra carrito" });
+		
+		const cartProducts = await Carts.getCartProducts(cid);
+
+		const cartProductIndex = cartProducts.findIndex(
+			(item) => item.product._id.toString() === pid	
+		);
+		if (cartProductIndex === -1) return res.status(404).json({ status: "error", message: "El producto no se encuentra en el carrito" });
+
+		cartProducts[cartProductIndex].quantity = quantity;
+		const updatedCart = await Cart.findByIdAndUpdate( 
+			cid,  
+			{ $set: { products: cartProducts } },
+			{ new: true, runValidators: true }
+		);
+		res.status(200).json({ status: "success", payload: updatedCart });
+	} catch (error) {
+		res.status(500).json({ status: "error", message: "Error al actualizar productos del carrito" });
+	}
+});
+
+router.delete("/:cid", async (req, res) => {
+	try {		
+		const { cid } = req.params;
+
+		const cart = await Carts.getCart(cid);
+		if (!cart) return res.status(404).json({ status: "error", message: "No se encuentra carrito" });
+		
+		const cartProducts = await Carts.getCartProducts(cid);
+
+		const updatedCart = await Cart.findByIdAndUpdate( 
+			cid,  
+			{ $set: { products: [] } },
+			{ new: true, runValidators: true }
+		);
+		res.status(200).json({ status: "success", payload: updatedCart });
+	} catch (error) {
+		res.status(500).json({ status: "error", message: "Error al actualizar productos del carrito" });
+	}
 });
 
 export default router;

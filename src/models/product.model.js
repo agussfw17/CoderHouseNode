@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import paginate  from "mongoose-paginate-v2";
 
 const productSchema = new mongoose.Schema(
   {
@@ -28,6 +29,8 @@ const productSchema = new mongoose.Schema(
   },
   { timestamps: true },
 ); /*Guarda automaticamente el timestamp cuando se haga un insert*/
+
+productSchema.plugin(paginate); 
 
 /*INDEXACION*/
 productSchema.index({ title: 1 }, { unique: true });

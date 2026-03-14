@@ -1,23 +1,25 @@
 import { Router } from "express";
-import Products from "../classes/productsClass.js";
+import Views from "../classes/viewsClass.js";
 
 const router = Router();
 
 router.get('/', async(req,res) => {
     try{
-        const products = await Products.getProducts() 
-        res.render('home', { products });
+        const { limit = 10, page = 1 } = req.query;
+        const data = await Views.getProductsHB(limit, page);
+        res.render('home', data);
     } catch(error){
-        res.status(500).send({ message:error.message });
+        res.status(500).json({ status: "error", message: "Error al cargar la pagina" });
     }
 });
 
 router.get('/realTimeProducts', async(req,res) => {
     try{
-        const products = await Products.getProducts() 
-        res.render('realTimeProducts', { products });
+        const { limit = 10, page = 1 } = req.query;
+        const data = await Views.getProductsHB(limit, page);
+        res.render('realTimeProducts', data);
     } catch(error){
-        res.status(500).send({ message:error.message });
+        res.status(500).json({ status: "error", message: "Error al cargar tiempo real" });
     }
 });
 

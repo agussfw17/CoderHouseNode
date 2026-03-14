@@ -1,9 +1,11 @@
 import Product from "../models/product.model.js";
 
 export default class Products {
-  static async getProducts() {
-    const products = await Product.find().lean();
-    return products;
+  static async getProducts(limit, page) {
+    const data = await Product.paginate({}, { limit, page, lean:true });
+    const products = data.docs;
+    delete data.docs;
+    return { products, ...data };
   }
 
   static async getProduct(id) {

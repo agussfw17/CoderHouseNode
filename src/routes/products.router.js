@@ -1,14 +1,15 @@
 import { Router } from "express";
-import fs from "fs";
 import Products from "../classes/productsClass.js";
 
 const router = Router();
 
 router.get("/", async (req, res) => {
   try {
-    const products = await Products.getProducts();
+    const { limit = 10, page = 1 } = req.query;
+    const products = await Products.getProducts(limit, page);
     res.status(200).json({ status: "success", payload: products });
   } catch (error) {
+    console.log(error);
     res
       .status(500)
       .json({ status: "error", message: "Error al recuperar los productos." });
