@@ -1,32 +1,72 @@
 <div class="container py-5">
-  <div class="text-center mb-5">
-    <h1 class="fw-bold text-light">Home</h1>
-    <p class="text-secondary">Lista de productos</p>
-  </div>
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="fw-bold text-light">Tienda</h1>
+            <p class="text-secondary mb-0">Lista de productos</p>
+        </div>
 
-  <div class="row g-4" id="productsContainer">
+        <a href="/cart" class="btn btn-premium px-4">🛒 Ver carrito</a>
+    </div>
+
+    <div class="row g-4" id="productsContainer">
         {{#each products}}
-            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                <div class="product-card h-100 shadow-lg">
-                    <div class="p-4 d-flex flex-column">
-                        <h5 class="text-light fw-semibold">{{this.title}}</h5>
-                        <p class="text-secondary small mb-2">{{this.category}}</p>
-                        <p class="text-muted small">{{this.description}}</p>
-                        <div class="mt-auto">
-                            <div class="price mb-2">$ {{this.price}}</div>
-                            {{#if this.stock}}
-                                <span class="badge badge-stock mb-3">En stock ({{this.stock}})</span>
-                            {{else}}
-                                <span class="badge badge-out mb-3">Sin stock</span>
-                            {{/if}}
-                        </div>
-                    </div>
+        <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+            <div class="product-card h-100 d-flex flex-column">
+            <img src="/img/{{this.thumbnail}}" class="w-100">
+            <div class="p-4 d-flex flex-column flex-grow-1">
+                <h5 class="text-light fw-semibold">{{this.title}}</h5>
+                <p class="text-secondary small mb-1">{{this.category}}</p>
+                <p class="text-muted small">{{this.description}}</p>
+                <div class="mt-auto">
+                    <div class="price mb-2">$ {{this.price}}</div>
+                    {{#if this.stock}}
+                        <span class="badge badge-stock mb-3">En stock ({{this.stock}})</span>
+                    {{else}}
+                        <span class="badge badge-out mb-3">Sin stock</span>
+                    {{/if}}
+                        <button class="btn btn-premium w-100 addToCart" data-id="{{this._id}}">Agregar al carrito</button>
                 </div>
             </div>
-        {{/each}}
-
-        {{#each links}}
-            <a href="{{this.link}}" class="page-link">{{this.text}}</a>
+            </div>
+        </div>
         {{/each}}
     </div>
+
+    <div class="d-flex justify-content-center mt-5">
+        <nav>
+            <ul class="pagination pagination-lg">
+                <li id="firstPage" class="page-item">
+                    <button class="page-link bg-dark text-light border-secondary">
+                        ⏮
+                    </button>
+                </li>
+                <li id="prevPage" class="page-item">
+                    <button class="page-link bg-dark text-light border-secondary">
+                        ◀
+                    </button>
+                </li>
+
+                <li class="page-item disabled">
+                    <span class="page-link bg-dark text-secondary border-secondary">
+                        Página {{page}} de {{totalPages}}
+                    </span>
+                </li>
+
+
+                <li id="nextPage" class="page-item">
+                    <button class="page-link bg-dark text-light border-secondary">
+                        ▶
+                    </button>
+                </li>
+                <li id="lastPage" class="page-item">
+                    <button class="page-link bg-dark text-light border-secondary">
+                        ⏭
+                    </button>
+                </li>
+            </ul>
+        </nav>
+    </div>
 </div>
+
+<script id="pageData" type="application/json">{{{json this}}}</script>
+<script src="/static/js/home.js"></script>

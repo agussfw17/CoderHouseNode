@@ -2,7 +2,7 @@ import Cart from "../models/carts.model.js";
 import Products from "./productsClass.js";
 
 export default class Carts {
-	static async postCart(products) {
+	static async postCart() {
 		const cart = await Cart.create({});
 		return cart;
   	}
@@ -17,12 +17,10 @@ export default class Carts {
 		let updatedCart = null;
 
 		const cartProducts = await Carts.getCartProducts(cid);
-		console.log(cartProducts,'cartProducts');
     	if (cartProducts) {
 			const cartProductIndex = cartProducts.findIndex(
 				(cpi) => cpi.product._id.toString() === pid
 			);
-			console.log(cartProductIndex,'cartProductIndex');
 			if (cartProductIndex !== -1) {
 				cartProducts[cartProductIndex].quantity += quantity;
 				updatedCart = await Cart.findByIdAndUpdate( 

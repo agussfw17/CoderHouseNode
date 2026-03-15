@@ -21,7 +21,13 @@ const io = new Server(server);
 connectMongoDB();
 
 /*Configuracion de handlebars*/
-app.engine("handlebars", handlebars.engine());
+app.engine("handlebars", handlebars.engine({
+  helpers: {
+    json: (context) => JSON.stringify(context),
+    multiply: (a,b) => a * b
+  }
+}));
+
 app.set("views", __dirname + "/views");
 app.set("view engine", "handlebars");
 app.use("/static", express.static(__dirname + "/../public"));

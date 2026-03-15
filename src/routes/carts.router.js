@@ -7,7 +7,7 @@ const router = Router();
 
 router.post("/", async (req, res) => {
 	try {
-		const cart = await Carts.postCart({});
+		const cart = await Carts.postCart();
 		res.status(201).json({ status: "success",  payload: cart });
 	} catch (error) {
   		res.status(500).json({ status: "error", message: "Error al agregar carrito" });

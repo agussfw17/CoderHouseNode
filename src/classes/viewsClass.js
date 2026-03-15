@@ -7,7 +7,11 @@ export default class Views {
         
         const links = [];
         for (let i = 1; i <= products.totalPages; i++) {
-            links.push({text: i, link: `?limit=${limit}&page=${i}`}); 
+            if (i == page) {
+                links.push({ text: i, link: `?limit=${limit}&page=${i}`, active: true });
+            } else {
+                links.push({ text: i, link: `?limit=${limit}&page=${i}`, active: false });
+            }
         };
         return { ...products, links };
     }
