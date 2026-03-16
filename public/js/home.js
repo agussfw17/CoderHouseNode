@@ -5,15 +5,15 @@ async function initCart() {
   try {
     const cartURL = document.getElementById("cartURL");
 
-    let cartId = localStorage.getItem("cartId");
+    let cartId = sessionStorage.getItem("cartId");
     if (!cartId) {
       const res = await axios.post("/api/carts");
       cartId = res.data.payload._id.toString();
-      localStorage.setItem("cartId", cartId);
+      sessionStorage.setItem("cartId", cartId);
     }
 
     cartURL.href = `/cart/${cartId}`;
-    localStorage.setItem("cartURL", cartId);
+    sessionStorage.setItem("cartURL", cartId);
   } catch (error) {
     console.log("error", error);
   }
@@ -23,7 +23,7 @@ async function initCart() {
 /*----------------------------------------Agregar productos---------------------------------------*/
 async function addToCart(e) {
   try {
-    const cartId = localStorage.getItem("cartId");
+    const cartId = sessionStorage.getItem("cartId");
     const productId = e.currentTarget.dataset.id;
     const quantity = Number(
       document.getElementById(`quantity${productId}`).value,

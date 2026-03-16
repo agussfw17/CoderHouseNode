@@ -4,7 +4,7 @@ const { cartProducts } = JSON.parse(
 
 async function deleteFromCart(e) {
   try {
-    const cartId = localStorage.getItem("cartId");
+    const cartId = sessionStorage.getItem("cartId");
     const productId = e.currentTarget.dataset.id;
     const res = await axios.delete(
       `/api/carts/${cartId}/products/${productId}`,

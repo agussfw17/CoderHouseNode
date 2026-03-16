@@ -8,7 +8,7 @@ const router = Router();
 
 router.get("/", async (req, res) => {
   try {
-    const { limit = 3, page = 1 } = req.query;
+    const { limit = 10, page = 1 } = req.query;
     const data = await Views.getProductsHB(limit, page);
     res.render("home", { ...data });
   } catch (error) {
