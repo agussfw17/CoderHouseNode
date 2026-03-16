@@ -41,7 +41,7 @@
 
     <div class="row g-4" id="productsContainer">
         {{#each products}}
-            <div class="col-12 col-sm-6 col-lg-4 col-xl-3" data-product-id="{{this.id}}">
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3" data-product-id="{{this._id}}">
                 <div class="product-card h-100 shadow-lg">
                     <div class="p-4 d-flex flex-column">
                         <h5 class="text-light fw-semibold">{{this.title}}</h5>
@@ -54,7 +54,7 @@
                             {{else}}
                                 <span class="badge badge-out mb-3">Sin stock</span>
                             {{/if}}
-                            <div class="d-grid"><button class="btn btn-danger delete-btn" data-id="{{this.id}}">Eliminar</button></div>
+                            <div class="d-grid"><button class="btn btn-danger delete-btn" data-id="{{this._id}}">Eliminar</button></div>
                         </div>
                     </div>
                 </div>

@@ -2,64 +2,64 @@ import Cart from "../models/carts.model.js";
 import Products from "./productsClass.js";
 
 export default class Carts {
-	static async postCart() {
-		const cart = await Cart.create({});
-		return cart;
-  	}
+  static async postCart() {
+    const cart = await Cart.create({});
+    return cart;
+  }
 
-	static async getCart(id) {
-		const cart = await Cart.findById(id).lean();
-		if (!cart) return null;
-		return cart;
-  	}
+  static async getCart(id) {
+    const cart = await Cart.findById(id).lean();
+    if (!cart) return null;
+    return cart;
+  }
 
-	static async postProductCart(cid, pid, quantity) {
-		let updatedCart = null;
+  static async postProductCart(cid, pid, quantity) {
+    let updatedCart = null;
 
-		const cartProducts = await Carts.getCartProducts(cid);
-    	if (cartProducts) {
-			const cartProductIndex = cartProducts.findIndex(
-				(cpi) => cpi.product._id.toString() === pid
-			);
-			if (cartProductIndex !== -1) {
-				cartProducts[cartProductIndex].quantity += quantity;
-				updatedCart = await Cart.findByIdAndUpdate( 
-					cid,  
-					{ $set: { products: cartProducts } },
-					{ new: true, runValidators: true }
-				);
-			}else {
-				updatedCart = await Cart.findByIdAndUpdate(
-					cid,
-					{ $push: { products: { product: pid, quantity } } },
-					{ new: true, runValidators: true }
-				);
-			}
-    	}
-		return updatedCart;
-  	}
+    const cartProducts = await Carts.getCartProducts(cid);
+    if (cartProducts) {
+      const cartProductIndex = cartProducts.findIndex(
+        (cpi) => cpi.product._id.toString() === pid,
+      );
+      if (cartProductIndex !== -1) {
+        cartProducts[cartProductIndex].quantity += quantity;
+        updatedCart = await Cart.findByIdAndUpdate(
+          cid,
+          { $set: { products: cartProducts } },
+          { new: true, runValidators: true },
+        );
+      } else {
+        updatedCart = await Cart.findByIdAndUpdate(
+          cid,
+          { $push: { products: { product: pid, quantity } } },
+          { new: true, runValidators: true },
+        );
+      }
+    }
+    return updatedCart;
+  }
 
-	static async getCartProducts(id) {
-		const cart = await Cart.findById(id).lean().populate("products.product");
-		if (!cart) return null;
-		return cart.products;
-	}
+  static async getCartProducts(id) {
+    const cart = await Cart.findById(id).lean().populate("products.product");
+    if (!cart) return null;
+    return cart.products;
+  }
 
-	static async deleteProductCart(cid, pid) {
-		const updatedCart = await Cart.findByIdAndUpdate(
-			cid,
-			{ $pull: { products: { product: pid } } },
-			{ new: true, runValidators: true }
-		);
-		return updatedCart;
-	}
+  static async deleteProductCart(cid, pid) {
+    const updatedCart = await Cart.findByIdAndUpdate(
+      cid,
+      { $pull: { products: { product: pid } } },
+      { new: true, runValidators: true },
+    );
+    return updatedCart;
+  }
 
-	static async updateProductsCart(cid, products) {
-		const updatedCart = await Cart.findByIdAndUpdate(
-			cid,
-			{ $set: { products } },
-			{ new: true }
-		);
-		return updatedCart;
-	}
+  static async updateProductsCart(cid, products) {
+    const updatedCart = await Cart.findByIdAndUpdate(
+      cid,
+      { $set: { products } },
+      { new: true },
+    );
+    return updatedCart;
+  }
 }
