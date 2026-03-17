@@ -32,6 +32,20 @@ async function addToCart(e) {
     const res = await axios.post(`/api/carts/${cartId}/product/${productId}`, {
       quantity: quantity,
     });
+
+    Toastify({
+      text: "Producto agregado al carrito 🛒",
+      duration: 3000,
+      gravity: "top",
+      position: "center",
+      stopOnFocus: true,
+      style: {
+        background: "linear-gradient(to right, #00b09b, #96c93d)",
+        borderRadius: "12px",
+        padding: "12px 20px",
+        fontSize: "16px"
+      }
+    }).showToast();
   } catch (error) {
     console.log("error", error);
   }

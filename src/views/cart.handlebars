@@ -14,7 +14,7 @@
         {{#each cartProducts}}
             <div id="productCard{{this.product._id}}" class="col-12">
                 <div class="product-card d-flex align-items-center p-3">
-                    <img src="/img/{{this.product.thumbnail}}" style="width:100px; border-radius:10px;">
+                    <img src="{{this.product.thumbnail}}" class="cart-product-img me-4">
                     <div class="ms-4 flex-grow-1">
                         <h5 class="text-light mb-1">{{this.product.title}}</h5>
                         <p class="text-secondary small mb-1">{{this.product.category}}</p>
@@ -50,6 +50,8 @@
     </div>
 </div>
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 <script id="cartData" type="application/json">{{{json this}}}</script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="/static/js/cart.js"></script>

@@ -16,6 +16,20 @@ async function deleteFromCart(e) {
 
     /*Actualizar total*/
     calculateTotal();
+
+    Toastify({
+      text: "Producto eliminado del carrito 🛒",
+      duration: 3000,
+      gravity: "top",
+      position: "center",
+      stopOnFocus: true,
+      style: {
+        background: "linear-gradient(to right, #b00000, #c93d3d)",
+        borderRadius: "12px",
+        padding: "12px 20px",
+        fontSize: "16px"
+      }
+    }).showToast();
   } catch (error) {
     console.log("error", error);
   }
